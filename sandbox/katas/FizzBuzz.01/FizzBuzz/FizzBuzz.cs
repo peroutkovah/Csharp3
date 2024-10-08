@@ -1,9 +1,5 @@
-
-
 public class FizzBuzz
 {
-
-
     public void CountTo(int lastNumber)
     {
         for (int currentNumber = 1; currentNumber <= lastNumber; currentNumber++)
@@ -27,4 +23,3 @@ public class FizzBuzz
         }
     }
 }
-
