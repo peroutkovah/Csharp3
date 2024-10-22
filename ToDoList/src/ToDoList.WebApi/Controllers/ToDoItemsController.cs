@@ -10,7 +10,7 @@ public class ToDoItemsController : ControllerBase
     public static readonly List<ToDoItem> items = [];
 
     [HttpPost]
-    public IActionResult Create(ToDoItemCreateRequestDto request)
+    public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)
     {
         //map to Domain object as soon as possible
         var item = request.ToDomain();
@@ -27,8 +27,10 @@ public class ToDoItemsController : ControllerBase
         }
 
         //respond to client
-        // return NoContent(); //201 //tato metoda z nějakého důvodu vrací status code No Content 204, zjištujeme proč ;)
-        return CreatedAtAction(nameof(Create), new { id = item.ToDoItemId }, ToDoItemGetResponseDto.FromDomain(item));
+        return CreatedAtAction(
+            nameof(ReadById),
+            new { toDoItemId = item.ToDoItemId },
+            ToDoItemGetResponseDto.FromDomain(item)); //201
     }
 
     [HttpGet]
@@ -38,99 +40,84 @@ public class ToDoItemsController : ControllerBase
         try
         {
             itemsToGet = items;
-            var countItems = items.Count;
-            if (countItems == 0)
-            {
-                return NotFound(new { Message = $"List s úkoly je prázdný." });
-
-            }
-
         }
         catch (Exception ex)
         {
-            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
-            ;
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
         }
 
-        var allItems = itemsToGet.Select(ToDoItemGetResponseDto.FromDomain);
-        return Ok(allItems);
+        //respond to client
+        return (itemsToGet is null)
+            ? NotFound() //404
+            : Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain)); //200
     }
 
     [HttpGet("{toDoItemId:int}")]
-    public IActionResult ReadById(int toDoItemId)
+    public ActionResult<ToDoItemGetResponseDto> ReadById(int toDoItemId)
     {
+        //try to retrieve the item by id
+        ToDoItem? itemToGet;
         try
         {
-            var toDoItem = items.Find(item => item.ToDoItemId == toDoItemId);
-
-            if (toDoItem == null)
-            {
-                /* var notFoundResponse = new
-                {
-                    Message = $"Úkol s ID {toDoItemId} neexistuje."
-                };
-
-                return NotFound(notFoundResponse); */
-
-                return NotFound(new { Message = $"Úkol s ID {toDoItemId} neexistuje." });
-
-            }
-
-            return Ok(ToDoItemGetResponseDto.FromDomain(toDoItem));
+            itemToGet = items.Find(i => i.ToDoItemId == toDoItemId);
         }
         catch (Exception ex)
         {
-            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
-            ;
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
         }
+
+        //respond to client
+        return (itemToGet is null)
+            ? NotFound() //404
+            : Ok(ToDoItemGetResponseDto.FromDomain(itemToGet)); //200
     }
 
     [HttpPut("{toDoItemId:int}")]
     public IActionResult UpdateById(int toDoItemId, [FromBody] ToDoItemUpdateRequestDto request)
     {
+        //map to Domain object as soon as possible
+        var updatedItem = request.ToDomain();
+
+        //try to update the item by retrieving it with given id
         try
         {
-            //Pouziti FindIndex pro najiit ITEMu v seznamu
-            int index = items.FindIndex(item => item.ToDoItemId == toDoItemId);
-
-            if (index == -1)
+            //retrieve the item
+            var itemIndexToUpdate = items.FindIndex(i => i.ToDoItemId == toDoItemId);
+            if (itemIndexToUpdate == -1)
             {
-                return NotFound(new { Message = $"Úkol s ID {toDoItemId} neexistuje." });
+                return NotFound(); //404
             }
-
-            var toDoItem = items[index];
-            toDoItem.Name = request.Name;
-            toDoItem.Description = request.Description;
-            toDoItem.IsCompleted = request.IsCompleted;
-
-            return NoContent();
+            updatedItem.ToDoItemId = toDoItemId;
+            items[itemIndexToUpdate] = updatedItem;
         }
         catch (Exception ex)
         {
-            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
-            ;
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
         }
+
+        //respond to client
+        return NoContent(); //204
     }
 
     [HttpDelete("{toDoItemId:int}")]
     public IActionResult DeleteById(int toDoItemId)
     {
+        //try to delete the item
         try
         {
-            var toDoItem = items.Find(item => item.ToDoItemId == toDoItemId);
-
-            if (toDoItem == null)
+            var itemToDelete = items.Find(i => i.ToDoItemId == toDoItemId);
+            if (itemToDelete is null)
             {
-                return NotFound($"msg: Úkol s ID {toDoItemId} neexistuje. Není možné ho smazat.");
+                return NotFound(); //404
             }
-            items.Remove(toDoItem);
-            return NoContent();
-            //return Ok(new { Message = $"Úkol s ID {toDoItemId} byl smazán."});
+            items.Remove(itemToDelete);
         }
         catch (Exception ex)
         {
             return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
-            ;
         }
+
+        //respond to client
+        return NoContent(); //204
     }
 }
