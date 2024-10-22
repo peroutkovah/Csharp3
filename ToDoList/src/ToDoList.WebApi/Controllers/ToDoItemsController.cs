@@ -7,7 +7,7 @@ using ToDoList.Domain.Models;
 [Route("api/[controller]")]
 public class ToDoItemsController : ControllerBase
 {
-    private static readonly List<ToDoItem> items = [];
+    public static readonly List<ToDoItem> items = [];
 
     [HttpPost]
     public IActionResult Create(ToDoItemCreateRequestDto request)
@@ -32,24 +32,28 @@ public class ToDoItemsController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Read()
+    public ActionResult<IEnumerable<ToDoItemGetResponseDto>> Read()
     {
+        List<ToDoItem> itemsToGet;
         try
         {
+            itemsToGet = items;
             var countItems = items.Count;
             if (countItems == 0)
             {
-                return NotFound(new { Message = $"List s úkoly je prázdný."});
+                return NotFound(new { Message = $"List s úkoly je prázdný." });
 
             }
 
-            var allItems = items.Select(ToDoItemGetResponseDto.FromDomain).ToList();
-            return Ok(allItems);
         }
         catch (Exception ex)
         {
-            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);;
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
+            ;
         }
+
+        var allItems = itemsToGet.Select(ToDoItemGetResponseDto.FromDomain);
+        return Ok(allItems);
     }
 
     [HttpGet("{toDoItemId:int}")]
@@ -58,7 +62,7 @@ public class ToDoItemsController : ControllerBase
         try
         {
             var toDoItem = items.Find(item => item.ToDoItemId == toDoItemId);
- 
+
             if (toDoItem == null)
             {
                 /* var notFoundResponse = new
@@ -68,7 +72,7 @@ public class ToDoItemsController : ControllerBase
 
                 return NotFound(notFoundResponse); */
 
-                return NotFound(new { Message = $"Úkol s ID {toDoItemId} neexistuje."});
+                return NotFound(new { Message = $"Úkol s ID {toDoItemId} neexistuje." });
 
             }
 
@@ -76,7 +80,8 @@ public class ToDoItemsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);;
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
+            ;
         }
     }
 
@@ -87,7 +92,7 @@ public class ToDoItemsController : ControllerBase
         {
             //Pouziti FindIndex pro najiit ITEMu v seznamu
             int index = items.FindIndex(item => item.ToDoItemId == toDoItemId);
- 
+
             if (index == -1)
             {
                 return NotFound(new { Message = $"Úkol s ID {toDoItemId} neexistuje." });
@@ -102,7 +107,8 @@ public class ToDoItemsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);;
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
+            ;
         }
     }
 
@@ -112,7 +118,7 @@ public class ToDoItemsController : ControllerBase
         try
         {
             var toDoItem = items.Find(item => item.ToDoItemId == toDoItemId);
- 
+
             if (toDoItem == null)
             {
                 return NotFound($"msg: Úkol s ID {toDoItemId} neexistuje. Není možné ho smazat.");
@@ -123,7 +129,8 @@ public class ToDoItemsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);;
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
+            ;
         }
     }
 }
