@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.Models;
 using ToDoList.WebApi.Controllers;
 using ToDoList.Domain.DTOs;
+using Xunit;
+using Microsoft.AspNetCore.Http;
 
 public class PutTests
 {
@@ -24,16 +26,18 @@ public class PutTests
 
         // Act
         var result = controller.UpdateById(toDoItem.ToDoItemId, changedItem);
-        var resultResult = result as CreatedAtActionResult;
-        var value = resultResult.Value as ToDoItemGetResponseDto;
 
         // Assert
-        Assert.IsType<CreatedAtActionResult>(resultResult);
-        Assert.NotNull(value);
+        var noContentResult = Assert.IsType<NoContentResult>(result);
+        Assert.Equal(StatusCodes.Status204NoContent, noContentResult.StatusCode);
 
-        //Assert.Equal(newItem.ToDoItemId, value.Id);
-        Assert.Equal(toDoItem.Description, value.Description);
-        Assert.Equal(toDoItem.IsCompleted, value.IsCompleted);
-        Assert.Equal(toDoItem.Name, value.Name);
+
+        var updatedItem = ToDoItemsController.items.Find(i => i.ToDoItemId == toDoItem.ToDoItemId);
+        Assert.NotNull(updatedItem);
+        Assert.Equal(changedItem.Name, updatedItem.Name);
+        Assert.Equal(changedItem.Description, updatedItem.Description);
+        Assert.Equal(changedItem.IsCompleted, updatedItem.IsCompleted);
+        Assert.True(updatedItem.IsCompleted);
+
     }
 }
