@@ -1,21 +1,24 @@
 namespace ToDoList.Test;
 
 using Microsoft.AspNetCore.Mvc;
-using ToDoList.Domain.Models;
-using ToDoList.WebApi.Controllers;
 using ToDoList.Domain.DTOs;
+using ToDoList.WebApi.Controllers;
 
 public class PostTests
 {
     [Fact]
-    public void Post_Item_CreateItem()
+    public void Post_ValidRequest_ReturnsNewItem()
     {
         // Arrange
         var controller = new ToDoItemsController();
-        var newItem = new ToDoItemCreateRequestDto("Háčkovat", "Uháčkuj svetr pro Barbie", true);
+        var request = new ToDoItemCreateRequestDto(
+            Name: "Jmeno",
+            Description: "Popis",
+            IsCompleted: false
+        );
 
         // Act
-        var result = controller.Create(newItem);
+        var result = controller.Create(request);
         var resultResult = result.Result;
         var value = result.GetValue();
 
@@ -23,9 +26,8 @@ public class PostTests
         Assert.IsType<CreatedAtActionResult>(resultResult);
         Assert.NotNull(value);
 
-        //Assert.Equal(newItem.ToDoItemId, value.Id);
-        Assert.Equal(newItem.Description, value.Description);
-        Assert.Equal(newItem.IsCompleted, value.IsCompleted);
-        Assert.Equal(newItem.Name, value.Name);
+        Assert.Equal(request.Description, value.Description);
+        Assert.Equal(request.IsCompleted, value.IsCompleted);
+        Assert.Equal(request.Name, value.Name);
     }
 }
