@@ -8,7 +8,7 @@ using ToDoList.Persistence;
 [Route("api/[controller]")]
 public class ToDoItemsController : ControllerBase
 {
-    public readonly List<ToDoItem> items = [];
+   
     private readonly ToDoItemsContext context;
 
     public ToDoItemsController(ToDoItemsContext context)
