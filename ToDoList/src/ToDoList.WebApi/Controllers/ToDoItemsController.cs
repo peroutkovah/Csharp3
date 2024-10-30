@@ -13,7 +13,7 @@ public class ToDoItemsController : ControllerBase
 
     public ToDoItemsController(ToDoItemsContext context)
     {
-        this.context=context;
+        this.context = context;
     }
 
     [HttpPost]
@@ -25,10 +25,10 @@ public class ToDoItemsController : ControllerBase
         //try to create an item
         try
         {
-           // item.ToDoItemId = items.Count == 0 ? 1 : items.Max(o => o.ToDoItemId) + 1;
-           // items.Add(item);
-           context.ToDoItems.Add(item);
-           context.SaveChanges();
+            // item.ToDoItemId = items.Count == 0 ? 1 : items.Max(o => o.ToDoItemId) + 1;
+            // items.Add(item);
+            context.ToDoItems.Add(item);
+            context.SaveChanges();
         }
         catch (Exception ex)
         {
@@ -45,10 +45,12 @@ public class ToDoItemsController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<ToDoItemGetResponseDto>> Read()
     {
-        List<ToDoItem> itemsToGet;
+        //List<ToDoItem> itemsToGet;
+        var itemsToGet = context.ToDoItems.ToList();
+
         try
         {
-            itemsToGet = items;
+            itemsToGet = context.ToDoItems.ToList();
         }
         catch (Exception ex)
         {
@@ -68,7 +70,7 @@ public class ToDoItemsController : ControllerBase
         ToDoItem? itemToGet;
         try
         {
-            itemToGet = items.Find(i => i.ToDoItemId == toDoItemId);
+            itemToGet = context.ToDoItems.Find(toDoItemId);
         }
         catch (Exception ex)
         {
@@ -91,13 +93,16 @@ public class ToDoItemsController : ControllerBase
         try
         {
             //retrieve the item
-            var itemIndexToUpdate = items.FindIndex(i => i.ToDoItemId == toDoItemId);
-            if (itemIndexToUpdate == -1)
+            var itemTobeUpdate = context.ToDoItems.Find(toDoItemId);
+            if (itemTobeUpdate == null)
             {
                 return NotFound(); //404
             }
-            updatedItem.ToDoItemId = toDoItemId;
-            items[itemIndexToUpdate] = updatedItem;
+
+            itemTobeUpdate.Name = updatedItem.Name;
+            itemTobeUpdate.Description = updatedItem.Description;
+            itemTobeUpdate.IsCompleted = updatedItem.IsCompleted;
+            context.SaveChanges();
         }
         catch (Exception ex)
         {
@@ -114,12 +119,14 @@ public class ToDoItemsController : ControllerBase
         //try to delete the item
         try
         {
-            var itemToDelete = items.Find(i => i.ToDoItemId == toDoItemId);
+            var itemToDelete = context.ToDoItems.Find(toDoItemId);
             if (itemToDelete is null)
             {
                 return NotFound(); //404
             }
-            items.Remove(itemToDelete);
+
+            context.ToDoItems.Remove(itemToDelete);
+            context.SaveChanges();
         }
         catch (Exception ex)
         {
