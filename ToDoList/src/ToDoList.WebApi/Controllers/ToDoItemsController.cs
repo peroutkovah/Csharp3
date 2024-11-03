@@ -8,7 +8,7 @@ using ToDoList.Persistence;
 [Route("api/[controller]")]
 public class ToDoItemsController : ControllerBase
 {
-   
+
     private readonly ToDoItemsContext context;
 
     public ToDoItemsController(ToDoItemsContext context)
@@ -46,6 +46,9 @@ public class ToDoItemsController : ControllerBase
     public ActionResult<IEnumerable<ToDoItemGetResponseDto>> Read()
     {
         //List<ToDoItem> itemsToGet;
+        /*
+        Tu robis to iste ako o par riadkov nizsie v try bloku. Zmazala by som to odtial a nechala to iba v tom try bloku
+        */
         var itemsToGet = context.ToDoItems.ToList();
 
         try
