@@ -1,4 +1,4 @@
-namespace ToDoList.Test;
+namespace ToDoList.Test.IntegrationTests;
 
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.Models;
@@ -12,15 +12,19 @@ public class GetByIdTests
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
+<<<<<<< HEAD
         var controller = new ToDoItemsController(context);
+=======
+        var controller = new ToDoItemsController(context, null); // Docasny hack, nez z controlleru odstranime context.
+>>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
         var toDoItem = new ToDoItem
         {
-            ToDoItemId = 1,
             Name = "Jmeno",
             Description = "Popis",
             IsCompleted = false
         };
-        controller.items.Add(toDoItem);
+        context.ToDoItems.Add(toDoItem);
+        context.SaveChanges();
 
         // Act
         var result = controller.ReadById(toDoItem.ToDoItemId);
@@ -42,15 +46,20 @@ public class GetByIdTests
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
+<<<<<<< HEAD
         var controller = new ToDoItemsController(context);
+=======
+        var controller = new ToDoItemsController(context, null); // Docasny hack, nez z controlleru odstranime context.
+
+>>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
         var toDoItem = new ToDoItem
         {
-            ToDoItemId = 1,
             Name = "Jmeno",
             Description = "Popis",
             IsCompleted = false
         };
-        controller.items.Add(toDoItem);
+        context.ToDoItems.Add(toDoItem);
+        context.SaveChanges();
 
         // Act
         var invalidId = -1;

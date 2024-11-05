@@ -1,8 +1,12 @@
-namespace ToDoList.Test;
+namespace ToDoList.Test.IntegrationTests;
 
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
 using ToDoList.Persistence;
+<<<<<<< HEAD
+=======
+using ToDoList.Persistence.Repositories;
+>>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
 using ToDoList.WebApi.Controllers;
 
 public class PostTests
@@ -12,7 +16,12 @@ public class PostTests
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
+<<<<<<< HEAD
         var controller = new ToDoItemsController(context);
+=======
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(null, repository); // Docasny hack, nez z controlleru odstranime context.
+>>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
         var request = new ToDoItemCreateRequestDto(
             Name: "Jmeno",
             Description: "Popis",

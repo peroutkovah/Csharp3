@@ -4,12 +4,16 @@ using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
 using ToDoList.Persistence.Repositories;
+<<<<<<< HEAD
 
+=======
+>>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
 
 [ApiController]
 [Route("api/[controller]")]
 public class ToDoItemsController : ControllerBase
 {
+<<<<<<< HEAD
     //bez contextu bude finalni stav
     private readonly ToDoItemsContext context;
     private readonly IRepository<ToDoItem> repository;
@@ -17,10 +21,17 @@ public class ToDoItemsController : ControllerBase
     public IRepository<ToDoItem> RepositoryMock { get; }
 //tenhle konstruktor, pak odstranim
     public ToDoItemsController(ToDoItemsContext context, IRepository<ToDoItem> repository)
+=======
+    private readonly ToDoItemsContext context;
+    private readonly IRepository<ToDoItem> repository;
+
+    public ToDoItemsController(ToDoItemsContext context, IRepository<ToDoItem> repository) // Az domigrujeme, zbyde nam tu jen repository :)
+>>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
     {
         this.context = context;
         this.repository = repository;
     }
+<<<<<<< HEAD
 
      public ToDoItemsController(IRepository<ToDoItem> repository)
     {
@@ -28,6 +39,8 @@ public class ToDoItemsController : ControllerBase
     }
 
     //public ToDoItemsController(IRepository<ToDoItem> repositoryMock) => RepositoryMock = repositoryMock;
+=======
+>>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
 
     [HttpPost]
     public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)
@@ -38,6 +51,7 @@ public class ToDoItemsController : ControllerBase
         //try to create an item
         try
         {
+<<<<<<< HEAD
             //nahradim conntextem
             // item.ToDoItemId = items.Count == 0 ? 1 : items.Max(o => o.ToDoItemId) + 1;
             // items.Add(item);
@@ -48,6 +62,9 @@ public class ToDoItemsController : ControllerBase
 
             repository.Create(item);
 
+=======
+            repository.Create(item);
+>>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
         }
         catch (Exception ex)
         {
@@ -107,20 +124,30 @@ public class ToDoItemsController : ControllerBase
     {
         //map to Domain object as soon as possible
         var updatedItem = request.ToDomain();
+        updatedItem.ToDoItemId = toDoItemId;
 
         //try to update the item by retrieving it with given id
         try
         {
             //retrieve the item
+<<<<<<< HEAD
             var itemTobeUpdate = context.ToDoItems.Find(toDoItemId);
             if (itemTobeUpdate == null)
+=======
+            var itemToUpdate = context.ToDoItems.Find(toDoItemId);
+            if (itemToUpdate is null)
+>>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
             {
                 return NotFound(); //404
             }
 
+<<<<<<< HEAD
             itemTobeUpdate.Name = updatedItem.Name;
             itemTobeUpdate.Description = updatedItem.Description;
             itemTobeUpdate.IsCompleted = updatedItem.IsCompleted;
+=======
+            context.Entry(itemToUpdate).CurrentValues.SetValues(updatedItem);
+>>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
             context.SaveChanges();
         }
         catch (Exception ex)
