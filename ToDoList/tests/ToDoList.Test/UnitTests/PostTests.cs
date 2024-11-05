@@ -1,0 +1,40 @@
+namespace ToDoList.Test;
+using NSubstitute;
+using Microsoft.AspNetCore.Mvc;
+using ToDoList.Domain.DTOs;
+using ToDoList.Persistence;
+using ToDoList.WebApi.Controllers;
+using ToDoList.Persistence.Repositories;
+using ToDoList.Domain.Models;
+
+public class PostUnitTests
+{
+    [Fact]
+    public void Post_ValidRequest_ReturnsNewItem()
+    {
+        // Arrange
+        //tady si namokuju repozistar misto toho contextu
+        //var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
+        var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
+        var controller = new ToDoItemsController(repositoryMock);
+        //var controller = new ToDoItemsController(controller);
+        var request = new ToDoItemCreateRequestDto(
+            Name: "Jmeno",
+            Description: "Popis",
+            IsCompleted: false
+        );
+
+        // Act
+        var result = controller.Create(request);
+        var resultResult = result.Result;
+        var value = result.GetValue();
+
+        // Assert
+        Assert.IsType<CreatedAtActionResult>(resultResult);
+        Assert.NotNull(value);
+
+        Assert.Equal(request.Description, value.Description);
+        Assert.Equal(request.IsCompleted, value.IsCompleted);
+        Assert.Equal(request.Name, value.Name);
+    }
+}
