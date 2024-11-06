@@ -13,7 +13,6 @@ using ToDoList.Persistence.Repositories;
 [Route("api/[controller]")]
 public class ToDoItemsController : ControllerBase
 {
-<<<<<<< HEAD
     //bez contextu bude finalni stav
     private readonly ToDoItemsContext context;
     private readonly IRepository<ToDoItem> repository;
@@ -21,17 +20,11 @@ public class ToDoItemsController : ControllerBase
     public IRepository<ToDoItem> RepositoryMock { get; }
 //tenhle konstruktor, pak odstranim
     public ToDoItemsController(ToDoItemsContext context, IRepository<ToDoItem> repository)
-=======
-    private readonly ToDoItemsContext context;
-    private readonly IRepository<ToDoItem> repository;
 
-    public ToDoItemsController(ToDoItemsContext context, IRepository<ToDoItem> repository) // Az domigrujeme, zbyde nam tu jen repository :)
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
     {
         this.context = context;
         this.repository = repository;
     }
-<<<<<<< HEAD
 
      public ToDoItemsController(IRepository<ToDoItem> repository)
     {
@@ -39,8 +32,6 @@ public class ToDoItemsController : ControllerBase
     }
 
     //public ToDoItemsController(IRepository<ToDoItem> repositoryMock) => RepositoryMock = repositoryMock;
-=======
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
 
     [HttpPost]
     public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)
@@ -51,7 +42,7 @@ public class ToDoItemsController : ControllerBase
         //try to create an item
         try
         {
-<<<<<<< HEAD
+
             //nahradim conntextem
             // item.ToDoItemId = items.Count == 0 ? 1 : items.Max(o => o.ToDoItemId) + 1;
             // items.Add(item);
@@ -62,9 +53,7 @@ public class ToDoItemsController : ControllerBase
 
             repository.Create(item);
 
-=======
-            repository.Create(item);
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
+
         }
         catch (Exception ex)
         {

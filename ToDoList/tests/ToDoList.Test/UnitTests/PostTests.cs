@@ -16,21 +16,16 @@ public class PostUnitTests
     public void Post_ValidRequest_ReturnsNewItem()
     {
         // Arrange
-<<<<<<< HEAD
-<<<<<<< HEAD
+
         //tady si namokuju repozistar misto toho contextu
         //var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
-        var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
-        var controller = new ToDoItemsController(repositoryMock);
+
         //var controller = new ToDoItemsController(controller);
-=======
+
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(null, repositoryMock); // Docasny hack, nez z controlleru odstranime context.
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
-=======
-        var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
-        var controller = new ToDoItemsController(null, repositoryMock); // Docasny hack, nez z controlleru odstranime context.
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
+
+
         var request = new ToDoItemCreateRequestDto(
             Name: "Jmeno",
             Description: "Popis",
@@ -73,5 +68,4 @@ public class PostUnitTests
         Assert.IsType<ObjectResult>(resultResult);
         Assert.Equivalent(new StatusCodeResult(StatusCodes.Status500InternalServerError), resultResult);
     }
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
 }
