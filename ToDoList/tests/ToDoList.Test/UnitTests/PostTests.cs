@@ -1,14 +1,12 @@
 namespace ToDoList.Test;
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 using NSubstitute;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
-using ToDoList.Persistence;
 using ToDoList.WebApi.Controllers;
 using ToDoList.Persistence.Repositories;
 using ToDoList.Domain.Models;
-
+using Microsoft.AspNetCore.Http;
 
 public class PostUnitTests
 {
@@ -16,12 +14,6 @@ public class PostUnitTests
     public void Post_ValidRequest_ReturnsNewItem()
     {
         // Arrange
-
-        //tady si namokuju repozistar misto toho contextu
-        //var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
-
-        //var controller = new ToDoItemsController(controller);
-
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
         var request = new ToDoItemCreateRequestDto(
@@ -44,7 +36,6 @@ public class PostUnitTests
         Assert.Equal(request.IsCompleted, value.IsCompleted);
         Assert.Equal(request.Name, value.Name);
     }
-
 
     [Fact]
     public void Post_UnhandledException_Returns500()

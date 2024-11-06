@@ -13,11 +13,6 @@ public class PutTests
     public void Put_ValidId_ReturnsNoContent()
     {
         // Arrange
-<<<<<<< HEAD
-        var path = AppContext.BaseDirectory;
-        var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
-        var controller = new ToDoItemsController(context);
-=======
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
         var repository = new ToDoItemsRepository(context);
         var controller = new ToDoItemsController(repository);

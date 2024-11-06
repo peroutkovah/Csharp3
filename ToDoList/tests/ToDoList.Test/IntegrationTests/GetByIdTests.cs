@@ -47,7 +47,6 @@ public class GetByIdTests
         var repository = new ToDoItemsRepository(context);
         var controller = new ToDoItemsController(repository);
 
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
         var toDoItem = new ToDoItem
         {
             Name = "Jmeno",
