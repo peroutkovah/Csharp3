@@ -5,3 +5,4 @@ public record class ToDoItemUpdateRequestDto(string Name, string Description, bo
 {
     public ToDoItem ToDomain() => new() { Name = this.Name, Description = this.Description, IsCompleted = this.IsCompleted };
 }
+
