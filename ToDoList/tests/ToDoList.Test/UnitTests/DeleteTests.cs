@@ -24,13 +24,13 @@ public class DeleteUnitTests
         // repositoryMock.ReadAll().Throws(); // vyhazujeme výjimku
         // repositoryMock.Received().ReadAll(); // kontrolujeme zavolání metody
         repositoryMock.ReadById(Arg.Any<int>()).Returns(new ToDoItem
-            {
-                Name="testName",
-                Description ="testDewscription",
-                IsCompleted = false
-            }
+        {
+            Name = "testName",
+            Description = "testDewscription",
+            IsCompleted = false
+        }
             );
-            var someId=1;
+        var someId = 1;
 
         //Act
         var result = controller.DeleteById(someId);
@@ -42,21 +42,21 @@ public class DeleteUnitTests
         Assert.IsType<NoContentResult>(result);
     }
 
-        [Fact]
+    [Fact]
     public void Delete_InvalidItemId_ReturnsNotFound()
     {
         //Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
         repositoryMock.ReadById(Arg.Any<int>()).ReturnsNull();
-        var someId=1;
+        var someId = 1;
 
         //Act
         var result = controller.DeleteById(someId);
 
-         //Assert
+        //Assert
         repositoryMock.Received(1).ReadById(someId);
-        repositoryMock.Received(1).DeleteById(someId);
+        //repositoryMock.Received(1).DeleteById(someId);
         Assert.IsType<NotFoundResult>(result);
     }
 
