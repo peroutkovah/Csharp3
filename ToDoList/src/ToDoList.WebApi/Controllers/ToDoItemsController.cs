@@ -3,10 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence.Repositories;
-<<<<<<< HEAD
-
-=======
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
 
 [ApiController]
 [Route("api/[controller]")]
@@ -28,18 +24,7 @@ public class ToDoItemsController : ControllerBase
         //try to create an item
         try
         {
-
-            //nahradim conntextem
-            // item.ToDoItemId = items.Count == 0 ? 1 : items.Max(o => o.ToDoItemId) + 1;
-            // items.Add(item);
-
-            //presunu do repozitare
-            //context.ToDoItems.Add(item);
-            //context.SaveChanges();
-
             repository.Create(item);
-
-
         }
         catch (Exception ex)
         {
@@ -105,7 +90,6 @@ public class ToDoItemsController : ControllerBase
             //retrieve the item
             var itemToUpdate = repository.ReadById(toDoItemId);
             if (itemToUpdate is null)
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
             {
                 return NotFound(); //404
             }
