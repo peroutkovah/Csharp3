@@ -20,8 +20,7 @@ public class PostTests
         var controller = new ToDoItemsController(context);
 =======
         var repository = new ToDoItemsRepository(context);
-        var controller = new ToDoItemsController(null, repository); // Docasny hack, nez z controlleru odstranime context.
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
+        var controller = new ToDoItemsController(repository);
         var request = new ToDoItemCreateRequestDto(
             Name: "Jmeno",
             Description: "Popis",

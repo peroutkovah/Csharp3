@@ -3,6 +3,7 @@ namespace ToDoList.Test.IntegrationTests;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
+using ToDoList.Persistence.Repositories;
 using ToDoList.WebApi.Controllers;
 
 public class DeleteTests
@@ -12,11 +13,8 @@ public class DeleteTests
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
-<<<<<<< HEAD
-        var controller = new ToDoItemsController(context);
-=======
-        var controller = new ToDoItemsController(context: context, repository: null); // Docasny hack, nez z controlleru odstranime context.
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(repository);
         var toDoItem = new ToDoItem
         {
             Name = "Jmeno",
@@ -38,11 +36,8 @@ public class DeleteTests
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
-<<<<<<< HEAD
-        var controller = new ToDoItemsController(context);
-=======
-        var controller = new ToDoItemsController(context, null); // Docasny hack, nez z controlleru odstranime context.
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(repository);
         var toDoItem = new ToDoItem
         {
             Name = "Jmeno",

@@ -2,7 +2,6 @@ namespace ToDoList.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
-using ToDoList.Persistence;
 using ToDoList.Persistence.Repositories;
 <<<<<<< HEAD
 
@@ -13,25 +12,12 @@ using ToDoList.Persistence.Repositories;
 [Route("api/[controller]")]
 public class ToDoItemsController : ControllerBase
 {
-    //bez contextu bude finalni stav
-    private readonly ToDoItemsContext context;
     private readonly IRepository<ToDoItem> repository;
 
-    public IRepository<ToDoItem> RepositoryMock { get; }
-//tenhle konstruktor, pak odstranim
-    public ToDoItemsController(ToDoItemsContext context, IRepository<ToDoItem> repository)
-
-    {
-        this.context = context;
-        this.repository = repository;
-    }
-
-     public ToDoItemsController(IRepository<ToDoItem> repository)
+    public ToDoItemsController(IRepository<ToDoItem> repository)
     {
         this.repository = repository;
     }
-
-    //public ToDoItemsController(IRepository<ToDoItem> repositoryMock) => RepositoryMock = repositoryMock;
 
     [HttpPost]
     public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)
@@ -70,12 +56,10 @@ public class ToDoItemsController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<ToDoItemGetResponseDto>> Read()
     {
-        //List<ToDoItem> itemsToGet;
-        var itemsToGet = context.ToDoItems.ToList();
-
+        IEnumerable<ToDoItem> itemsToGet;
         try
         {
-            itemsToGet = context.ToDoItems.ToList();
+            itemsToGet = repository.ReadAll();
         }
         catch (Exception ex)
         {
@@ -83,7 +67,7 @@ public class ToDoItemsController : ControllerBase
         }
 
         //respond to client
-        return (itemsToGet is null || itemsToGet.Count is 0)
+        return (itemsToGet is null || !itemsToGet.Any())
             ? NotFound() //404
             : Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain)); //200
     }
@@ -95,7 +79,7 @@ public class ToDoItemsController : ControllerBase
         ToDoItem? itemToGet;
         try
         {
-            itemToGet = context.ToDoItems.Find(toDoItemId);
+            itemToGet = repository.ReadById(toDoItemId);
         }
         catch (Exception ex)
         {
@@ -119,25 +103,14 @@ public class ToDoItemsController : ControllerBase
         try
         {
             //retrieve the item
-<<<<<<< HEAD
-            var itemTobeUpdate = context.ToDoItems.Find(toDoItemId);
-            if (itemTobeUpdate == null)
-=======
-            var itemToUpdate = context.ToDoItems.Find(toDoItemId);
+            var itemToUpdate = repository.ReadById(toDoItemId);
             if (itemToUpdate is null)
 >>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
             {
                 return NotFound(); //404
             }
 
-<<<<<<< HEAD
-            itemTobeUpdate.Name = updatedItem.Name;
-            itemTobeUpdate.Description = updatedItem.Description;
-            itemTobeUpdate.IsCompleted = updatedItem.IsCompleted;
-=======
-            context.Entry(itemToUpdate).CurrentValues.SetValues(updatedItem);
->>>>>>> ec372d91c93f60c082d6094137d2462abbd89a76
-            context.SaveChanges();
+            repository.Update(updatedItem);
         }
         catch (Exception ex)
         {
@@ -154,14 +127,13 @@ public class ToDoItemsController : ControllerBase
         //try to delete the item
         try
         {
-            var itemToDelete = context.ToDoItems.Find(toDoItemId);
+            var itemToDelete = repository.ReadById(toDoItemId);
             if (itemToDelete is null)
             {
                 return NotFound(); //404
             }
 
-            context.ToDoItems.Remove(itemToDelete);
-            context.SaveChanges();
+            repository.DeleteById(toDoItemId);
         }
         catch (Exception ex)
         {
