@@ -10,19 +10,20 @@ using ToDoList.Persistence.Repositories;
 [Route("api/[controller]")]
 public class ToDoItemsController : ControllerBase
 {
-    //bez contextu bude finalni stav
+    //bez contextu bude finalni stav - tohle odstranim a budud spolehat jen na rpozitar
     private readonly ToDoItemsContext context;
     private readonly IRepository<ToDoItem> repository;
 
     public IRepository<ToDoItem> RepositoryMock { get; }
-//tenhle konstruktor, pak odstranim
+
+    /* //tenhle konstruktor, pak odstranim
     public ToDoItemsController(ToDoItemsContext context, IRepository<ToDoItem> repository)
     {
         this.context = context;
         this.repository = repository;
-    }
+    } */
 
-     public ToDoItemsController(IRepository<ToDoItem> repository)
+    public ToDoItemsController(IRepository<ToDoItem> repository)
     {
         this.repository = repository;
     }
@@ -61,35 +62,16 @@ public class ToDoItemsController : ControllerBase
             ToDoItemGetResponseDto.FromDomain(item)); //201
     }
 
-    [HttpGet]
-    public ActionResult<IEnumerable<ToDoItemGetResponseDto>> Read()
-    {
-        //List<ToDoItem> itemsToGet;
-        var itemsToGet = context.ToDoItems.ToList();
-
-        try
-        {
-            itemsToGet = context.ToDoItems.ToList();
-        }
-        catch (Exception ex)
-        {
-            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
-        }
-
-        //respond to client
-        return (itemsToGet is null || itemsToGet.Count is 0)
-            ? NotFound() //404
-            : Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain)); //200
-    }
-
     [HttpGet("{toDoItemId:int}")]
     public ActionResult<ToDoItemGetResponseDto> ReadById(int toDoItemId)
     {
         //try to retrieve the item by id
         ToDoItem? itemToGet;
         try
-        {
-            itemToGet = context.ToDoItems.Find(toDoItemId);
+        {   //tohle nahradim tim repozitarem
+            //itemToGet = context.ToDoItems.Find(toDoItemId);
+          itemToGet= repository.ReadById(toDoItemId);
+
         }
         catch (Exception ex)
         {
@@ -102,17 +84,41 @@ public class ToDoItemsController : ControllerBase
             : Ok(ToDoItemGetResponseDto.FromDomain(itemToGet)); //200
     }
 
+    [HttpGet]
+    public ActionResult<IEnumerable<ToDoItemGetResponseDto>> Read()
+    {
+        //List<ToDoItem> itemsToGet;
+        IEnumerable<ToDoItem> itemsToGet;
+
+        try
+        {
+            itemsToGet = repository.ReadAll();
+        }
+        catch (Exception ex)
+        {
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
+        }
+
+        //respond to client
+        return (itemsToGet is null || itemsToGet.Count() is 0)
+            ? NotFound() //404
+            : Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain)); //200
+    }
+
+
     [HttpPut("{toDoItemId:int}")]
     public IActionResult UpdateById(int toDoItemId, [FromBody] ToDoItemUpdateRequestDto request)
     {
         //map to Domain object as soon as possible
         var updatedItem = request.ToDomain();
+        updatedItem.ToDoItemId = toDoItemId;
+
 
         //try to update the item by retrieving it with given id
         try
         {
             //retrieve the item
-            var itemTobeUpdate = context.ToDoItems.Find(toDoItemId);
+            /* var itemTobeUpdate = context.ToDoItems.Find(toDoItemId);
             if (itemTobeUpdate == null)
             {
                 return NotFound(); //404
@@ -121,7 +127,10 @@ public class ToDoItemsController : ControllerBase
             itemTobeUpdate.Name = updatedItem.Name;
             itemTobeUpdate.Description = updatedItem.Description;
             itemTobeUpdate.IsCompleted = updatedItem.IsCompleted;
-            context.SaveChanges();
+            context.SaveChanges(); */
+            var itemTobeUpdate =repository.ReadById(toDoItemId);
+            repository.Update(itemTobeUpdate);
+
         }
         catch (Exception ex)
         {
@@ -138,14 +147,14 @@ public class ToDoItemsController : ControllerBase
         //try to delete the item
         try
         {
-            var itemToDelete = context.ToDoItems.Find(toDoItemId);
+            //var itemToDelete = context.ToDoItems.Find(toDoItemId);
+            var itemToDelete = repository.ReadById(toDoItemId);
             if (itemToDelete is null)
             {
                 return NotFound(); //404
             }
+            repository.Delete(itemToDelete);
 
-            context.ToDoItems.Remove(itemToDelete);
-            context.SaveChanges();
         }
         catch (Exception ex)
         {
