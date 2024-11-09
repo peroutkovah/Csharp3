@@ -38,20 +38,25 @@ public class ToDoItemsRepository : IRepository<ToDoItem>
     {
         var itemTobeUpdate = context.ToDoItems.Find(item.ToDoItemId);
 
-        itemTobeUpdate.Name = item.Name;
         if (itemTobeUpdate == null)
         {
             throw new ArgumentOutOfRangeException($"ToDo item with ID {item.ToDoItemId} not found.");
         }
+
+        itemTobeUpdate.Name = item.Name;
         itemTobeUpdate.Description = item.Description;
         itemTobeUpdate.IsCompleted = item.IsCompleted;
         context.SaveChanges();
     }
 
-    public void Delete(ToDoItem item)
+    public void DeleteById(int id)
     {
-        var itemToDelete = context.ToDoItems.Find(item.ToDoItemId);
-        context.ToDoItems.Add(item);
+        var itemToDelete = context.ToDoItems.Find(id);
+        if (itemToDelete == null)
+        {
+            throw new ArgumentOutOfRangeException($"ToDo item with ID {itemToDelete.ToDoItemId} not found.");
+        }
+        context.ToDoItems.Remove(itemToDelete);
         context.SaveChanges();
     }
 }

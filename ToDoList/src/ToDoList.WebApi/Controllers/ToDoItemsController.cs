@@ -128,8 +128,13 @@ public class ToDoItemsController : ControllerBase
             itemTobeUpdate.Description = updatedItem.Description;
             itemTobeUpdate.IsCompleted = updatedItem.IsCompleted;
             context.SaveChanges(); */
+
             var itemTobeUpdate =repository.ReadById(toDoItemId);
-            repository.Update(itemTobeUpdate);
+            if (itemTobeUpdate == null)
+            {
+                return NotFound(); //404
+            }
+            repository.Update(updatedItem);
 
         }
         catch (Exception ex)
@@ -153,7 +158,7 @@ public class ToDoItemsController : ControllerBase
             {
                 return NotFound(); //404
             }
-            repository.Delete(itemToDelete);
+            repository.DeleteById(toDoItemId);
 
         }
         catch (Exception ex)

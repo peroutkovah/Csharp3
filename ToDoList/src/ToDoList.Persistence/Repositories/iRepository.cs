@@ -20,7 +20,7 @@ public interface IRepository<T> where T : class
     public void Update(T item);
 
     // Delete an item
-    public void Delete(T item);
+    public void DeleteById(int id);
 
 }
 
