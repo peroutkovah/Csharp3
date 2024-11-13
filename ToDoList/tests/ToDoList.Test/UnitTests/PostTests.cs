@@ -31,7 +31,6 @@ public class PostUnitTests
         Assert.IsType<CreatedAtActionResult>(resultResult);
         repositoryMock.Received(1).Create(Arg.Any<ToDoItem>());
         Assert.NotNull(value);
-
         Assert.Equal(request.Description, value.Description);
         Assert.Equal(request.IsCompleted, value.IsCompleted);
         Assert.Equal(request.Name, value.Name);

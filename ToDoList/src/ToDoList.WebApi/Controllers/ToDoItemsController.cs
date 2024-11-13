@@ -52,9 +52,18 @@ public class ToDoItemsController : ControllerBase
         }
 
         //respond to client
-        return (itemsToGet is null || !itemsToGet.Any())
+        if (itemsToGet is null || !itemsToGet.Any())
+        {
+            return NotFound(); // 404
+        }
+        else
+        {
+            return Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain)); // 200
+        }
+        //jiny zpusob
+       /*  return (itemsToGet is null || !itemsToGet.Any())
             ? NotFound() //404
-            : Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain)); //200
+            : Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain)); //200 */
     }
 
     [HttpGet("{toDoItemId:int}")]
@@ -72,9 +81,14 @@ public class ToDoItemsController : ControllerBase
         }
 
         //respond to client
-        return (itemToGet is null)
-            ? NotFound() //404
-            : Ok(ToDoItemGetResponseDto.FromDomain(itemToGet)); //200
+        if (itemToGet is null)
+        {
+            return NotFound(); // 404
+        }
+        else
+        {
+            return Ok(ToDoItemGetResponseDto.FromDomain(itemToGet)); // 200
+        }
     }
 
     [HttpPut("{toDoItemId:int}")]
@@ -118,13 +132,15 @@ public class ToDoItemsController : ControllerBase
             }
 
             repository.DeleteById(toDoItemId);
+
+            //respond to client
+            return NoContent(); //204
         }
         catch (Exception ex)
         {
-            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
+            return StatusCode(500, "Internal server error: " + ex.Message);
         }
 
-        //respond to client
-        return NoContent(); //204
+
     }
 }

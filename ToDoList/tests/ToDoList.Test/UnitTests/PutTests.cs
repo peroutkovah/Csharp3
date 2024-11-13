@@ -6,63 +6,67 @@ using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.ReturnsExtensions;
+using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence.Repositories;
 using ToDoList.WebApi.Controllers;
 
-public class DeleteUnitTests
+public class PutUnitTests
 {
     [Fact]
-    public void Delete_ValidItemID_ReturnsNoContent()
+    public void Put_UpdateByIdWhenItemUpdated_ReturnsNoContent()
     {
         //Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
-        //nastavim si tady repozitar
-        // repositoryMock.When().Do(); //genericke kdyz tak
-        // repositoryMock.ReadAll().Returns(); // nastavujeme return value
-        // repositoryMock.ReadAll().Throws(); // vyhazujeme výjimku
-        // repositoryMock.Received().ReadAll(); // kontrolujeme zavolání metody
-        repositoryMock.ReadById(Arg.Any<int>()).Returns(new ToDoItem
+        var someId = 1;
+        repositoryMock.ReadById(someId).Returns(new ToDoItem
         {
-            Name = "testName",
-            Description = "testDewscription",
+            Name = "Jmeno",
+            Description = "Popis",
             IsCompleted = false
         }
-            );
-        var someId = 1;
+        );
+
+        var request = new ToDoItemUpdateRequestDto("Zmeněné_Jmeno","Změněný_Popis",true);
+
 
         //Act
-        var result = controller.DeleteById(someId);
-
+        var result = controller.UpdateById(someId, request);
 
         //Assert
+        //kontrola, ze se mi ReadById naplni pouze jednou
         repositoryMock.Received(1).ReadById(someId);
-        repositoryMock.Received(1).DeleteById(someId);
+        repositoryMock.Received(1).Update(Arg.Is<ToDoItem>(item =>
+        item.Name == "Zmeněné_Jmeno" &&
+        item.Description == "Změněný_Popis" &&
+        item.IsCompleted == true
+        ));
         Assert.IsType<NoContentResult>(result);
     }
 
     [Fact]
-    public void Delete_InvalidItemId_ReturnsNotFound()
+    public void Put_UpdateByIdWhenIdNotFound_ReturnsNotFound()
     {
         //Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
-        repositoryMock.ReadById(Arg.Any<int>()).ReturnsNull();
         var someId = 1;
+        repositoryMock.ReadById(someId).ReturnsNull();
+
+        var request = new ToDoItemUpdateRequestDto("Zmeněné_Jmeno","Změněný_Popis",true);
 
         //Act
-        var result = controller.DeleteById(someId);
+        var result = controller.UpdateById(someId, request);
 
         //Assert
         repositoryMock.Received(1).ReadById(someId);
-        // testuju, ze DeletedById nebylo volano, kdyz je NUll
-        repositoryMock.DidNotReceive().DeleteById(someId);
+        //repositoryMock.Received(1).DeleteById(someId);
         Assert.IsType<NotFoundResult>(result);
     }
 
     [Fact]
-    public void Delete_DeleteByIdUnhandledException_ReturnsInternalServerError()
+    public void Put_UpdateByIdUnhandledException_ReturnsInternalServerError()
     {
         //Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
@@ -70,8 +74,10 @@ public class DeleteUnitTests
         var someId = 3;
         repositoryMock.When(r => r.ReadById(someId)).Do(x => throw new Exception("Unhandled error"));
 
+        var request = new ToDoItemUpdateRequestDto("Zmeněné_Jmeno","Změněný_Popis",true);
+
         //Act
-        var result = controller.DeleteById(someId);
+        var result = controller.UpdateById(someId, request);
 
 
         //Assert
