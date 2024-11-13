@@ -135,9 +135,10 @@ public class ToDoItemsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Internal server error: " + ex.Message);
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
         }
 
-
+        //respond to client
+        return NoContent(); //204
     }
 }
