@@ -61,9 +61,9 @@ public class ToDoItemsController : ControllerBase
             return Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain)); // 200
         }
         //jiny zpusob
-       /*  return (itemsToGet is null || !itemsToGet.Any())
-            ? NotFound() //404
-            : Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain)); //200 */
+        /*  return (itemsToGet is null || !itemsToGet.Any())
+             ? NotFound() //404
+             : Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain)); //200 */
     }
 
     [HttpGet("{toDoItemId:int}")]
@@ -131,10 +131,7 @@ public class ToDoItemsController : ControllerBase
                 return NotFound(); //404
             }
 
-            repository.DeleteById(toDoItemId);
-
-            //respond to client
-            return NoContent(); //204
+            repository.Delete(itemToDelete);
         }
         catch (Exception ex)
         {

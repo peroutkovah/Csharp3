@@ -1,12 +1,13 @@
 namespace ToDoList.Test.UnitTests;
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using ToDoList.Domain.Models;
-using ToDoList.Persistence.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using ToDoList.WebApi.Controllers;
+using ToDoList.Persistence.Repositories;
+using ToDoList.Domain.Models;
+using Microsoft.AspNetCore.Http;
+using NSubstitute.ExceptionExtensions;
+using NSubstitute.ReturnsExtensions;
 
 public class GetUnitTests
 {
@@ -16,15 +17,7 @@ public class GetUnitTests
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
-        repositoryMock.ReadAll().Returns(
-            [
-                new ToDoItem{
-                    Name = "testName",
-                    Description = "testDescription",
-                    IsCompleted = false
-                }
-            ]
-            );
+        repositoryMock.ReadAll().Returns([new ToDoItem { Name = "testItem", Description = "testDescription", IsCompleted = false }]);
 
         // Act
         var result = controller.Read();
@@ -41,8 +34,7 @@ public class GetUnitTests
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
-        // repositoryMock.ReadAll().ReturnsNull();
-        repositoryMock.ReadAll().Returns(null as IEnumerable<ToDoItem>);
+        repositoryMock.ReadAll().ReturnsNull();
 
         // Act
         var result = controller.Read();
@@ -59,6 +51,7 @@ public class GetUnitTests
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
+        //repositoryMock.When(r => r.ReadAll()).Do(r => throw new Exception());
         repositoryMock.ReadAll().Throws(new Exception());
 
         // Act
@@ -70,4 +63,5 @@ public class GetUnitTests
         repositoryMock.Received(1).ReadAll();
         Assert.Equivalent(new StatusCodeResult(StatusCodes.Status500InternalServerError), resultResult);
     }
+
 }

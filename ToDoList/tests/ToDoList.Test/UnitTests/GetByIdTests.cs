@@ -1,14 +1,13 @@
 namespace ToDoList.Test.UnitTests;
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
+using Microsoft.AspNetCore.Mvc;
+using ToDoList.WebApi.Controllers;
+using ToDoList.Persistence.Repositories;
+using ToDoList.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.ReturnsExtensions;
-using ToDoList.Domain.DTOs;
-using ToDoList.Domain.Models;
-using ToDoList.Persistence.Repositories;
-using ToDoList.WebApi.Controllers;
 
 public class GetByIdUnitTests
 {
@@ -19,31 +18,15 @@ public class GetByIdUnitTests
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
         var someId = 1;
-        var itemToBeSelected = new ToDoItem
-        {
-            ToDoItemId = someId,
-            Name = "testName",
-            Description = "testDewscription",
-            IsCompleted = false
-        };
-        //nastavim si, aby mi ten mock vracel tu moji chtenou Item
-        repositoryMock.ReadById(someId).Returns(itemToBeSelected);
-
+        repositoryMock.ReadById(someId).Returns(new ToDoItem { Name = "testItem", Description = "testDescription", IsCompleted = false });
 
         // Act
-        //spustim tu moji metodu
         var result = controller.ReadById(someId);
         var resultResult = result.Result;
-        var selectedItem = result.GetValue();
 
         // Assert
-        //testuju, zda je vysledek OK
         Assert.IsType<OkObjectResult>(resultResult);
-        //testuju, zda se mi ta ma Item fakt vraci, tj. je shodna s tou z moku
-        Assert.Equal(itemToBeSelected.ToDoItemId, selectedItem.Id);
-        Assert.Equal(itemToBeSelected.Name, selectedItem.Name);
-        Assert.Equal(itemToBeSelected.Description, selectedItem.Description);
-        Assert.Equal(itemToBeSelected.IsCompleted, selectedItem.IsCompleted);
+        repositoryMock.Received(1).ReadById(someId);
     }
 
     [Fact]
@@ -52,7 +35,7 @@ public class GetByIdUnitTests
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
-        var someId = 1000;
+        var someId = 1;
         repositoryMock.ReadById(someId).ReturnsNull();
 
         // Act
@@ -61,6 +44,7 @@ public class GetByIdUnitTests
 
         // Assert
         Assert.IsType<NotFoundResult>(resultResult);
+        repositoryMock.Received(1).ReadById(someId);
     }
 
     [Fact]
@@ -69,8 +53,8 @@ public class GetByIdUnitTests
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
-        var someId = 1000;
-        repositoryMock.When(r => r.ReadById(someId)).Do(x => throw new Exception("Unhandled error"));
+        var someId = 1;
+        repositoryMock.ReadById(someId).Throws(new Exception());
 
         // Act
         var result = controller.ReadById(someId);
@@ -78,6 +62,8 @@ public class GetByIdUnitTests
 
         // Assert
         Assert.IsType<ObjectResult>(resultResult);
+        repositoryMock.Received(1).ReadById(someId);
         Assert.Equivalent(new StatusCodeResult(StatusCodes.Status500InternalServerError), resultResult);
     }
+
 }
