@@ -1,4 +1,9 @@
-﻿@rendermode InteractiveServer
+﻿
+
+@using ToDoList.Frontend.Views
+@using ToDoList.Frontend.Clients
+@inject IToDoItemsClient ToDoItemsClient
+@rendermode InteractiveServer
 
 <h1>Dashboard</h1>
 
@@ -70,14 +75,17 @@ h1 {
         <th>Popis</th>
         <th>Splněný</th>
     </thead>
-    @foreach (var toDoItem in toDoItems)
+    @if (toDoItems is not null)
     {
-        <tr style="color: @GetRowColor(toDoItem.IsCompleted)">
-            <td>@toDoItem.ToDoItemId</td>
-            <td>@toDoItem.Name</td>
-            <td>@toDoItem.Description</td>
-            <td>@toDoItem.IsCompleted</td>
-        </tr>
+        @foreach (var toDoItem in toDoItems)
+        {
+            <tr>
+                <td>@toDoItem.ToDoItemId</td>
+                <td>@toDoItem.Name</td>
+                <td>@toDoItem.Description</td>
+                <td>@toDoItem.IsCompleted</td>
+            </tr>
+        }
     }
 
 
@@ -86,7 +94,7 @@ h1 {
 
 @code
 {
-    private List<ToDoItemView> toDoItems =
+   @*  private List<ToDoItemView> toDoItems =
     [
         new ToDoItemView() {ToDoItemId = 1, Name = "Dokonči ukol na Czechitas", Description = "Tohle fakt musíš udělat", IsCompleted = true},
         new ToDoItemView() {ToDoItemId = 2, Name = "Začítlat nepovinny ukol na Czechitas", Description = "Tohle udělej, když budeš stíhat", IsCompleted = false},
@@ -102,6 +110,16 @@ h1 {
         public string Description { get; set; }
         public bool IsCompleted { get; set; }
     }
+ *@
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        toDoItems = await ToDoItemsClient.ReadItemsAsync();
+    }
+
+    private List<ToDoItemView>? toDoItems;
 
     private void SortItemsById() {
     toDoItems = toDoItems.OrderBy(item => item.ToDoItemId).ToList();
