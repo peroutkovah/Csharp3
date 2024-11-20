@@ -1,24 +1,98 @@
 ﻿@rendermode InteractiveServer
 
 <h1>Dashboard</h1>
+
+<style>
+
+h1 {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    }
+/* Global reset for table styles */
+    table {
+        width: 60%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        border: 1px solid #ddd;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Styling for the table headings */
+    th {
+        background-color: #440659;
+        color: #ffffff;
+        padding: 10px;
+        text-align: left;
+    }
+
+    /* Styling for the table data cells */
+    td {
+       /*background-color: #f9f9f9;*/
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        text-align: left;
+    }
+
+    tr:nth-child(even) {
+    background-color: #f9f9f9;
+    }
+
+    tr:nth-child(odd) {
+    background-color: #e5c7ef;
+    }
+
+    tr:hover {
+    background-color: #7a7979;
+
+ /* Style for sort arrows */
+
+
+    .sort-button {
+        background: none;
+        border: none;
+        color: rgb(176, 8, 174);
+        font-weight: bold;
+        cursor: pointer;
+        padding: 5px;
+        font-size: 14px;
+        text-align: left;
+    }
+
+
+}
+
+</style>
+
 <table>
+    <thead>
+        <th><button class="sort-button" @onclick="SortItemsById">ID</button></th>
+        <th><button class="sort-button" @onclick="SortItemsByName">Jméno úkolu</button></th>
+        <th>Popis</th>
+        <th>Splněný</th>
+    </thead>
     @foreach (var toDoItem in toDoItems)
     {
-        <tr>
+        <tr style="color: @GetRowColor(toDoItem.IsCompleted)">
             <td>@toDoItem.ToDoItemId</td>
             <td>@toDoItem.Name</td>
-            <td>@toDoItem.IsCompleted</td>
             <td>@toDoItem.Description</td>
+            <td>@toDoItem.IsCompleted</td>
         </tr>
     }
+
+
 </table>
+
 
 @code
 {
     private List<ToDoItemView> toDoItems =
     [
-        new ToDoItemView() {ToDoItemId = 1, Name = "Udelat ukol na Czechitas", IsCompleted = false},
-        new ToDoItemView() {ToDoItemId = 2, Name = "Udelat nepovinny ukol na Czechitas", IsCompleted = false}
+        new ToDoItemView() {ToDoItemId = 1, Name = "Dokonči ukol na Czechitas", Description = "Tohle fakt musíš udělat", IsCompleted = true},
+        new ToDoItemView() {ToDoItemId = 2, Name = "Začítlat nepovinny ukol na Czechitas", Description = "Tohle udělej, když budeš stíhat", IsCompleted = false},
+        new ToDoItemView() {ToDoItemId = 3, Name = "Připravit věci do školy", Description = "Nezapomeň na knížku por Anežku", IsCompleted = false},
+        new ToDoItemView() {ToDoItemId = 4, Name = "Nachystat svačiny do školy", Description = "", IsCompleted = true}
+
     ];
 
     public class ToDoItemView
@@ -27,5 +101,21 @@
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsCompleted { get; set; }
+    }
+
+    private void SortItemsById() {
+    toDoItems = toDoItems.OrderBy(item => item.ToDoItemId).ToList();
+    }
+
+    private void SortItemsByName() {
+    toDoItems = toDoItems.OrderBy(item => item.Name).ToList();
+    }
+
+
+    /*vybarveni radku dlo toho, zda je ukol hotovy nebo ne*/
+    private string GetRowColor(bool isCompleted)
+    {
+        return isCompleted ? "#000000" : "#FF6347";
+
     }
 }
