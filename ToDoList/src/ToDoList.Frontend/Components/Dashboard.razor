@@ -1,5 +1,3 @@
-﻿
-
 @using ToDoList.Frontend.Views
 @using ToDoList.Frontend.Clients
 @inject IToDoItemsClient ToDoItemsClient
@@ -8,12 +6,12 @@
 <h1>Dashboard</h1>
 
 <style>
-
-h1 {
-    text-align: center;
-    font-family: Arial, sans-serif;
+    h1 {
+        text-align: center;
+        font-family: Arial, sans-serif;
     }
-/* Global reset for table styles */
+
+    /* Global reset for table styles */
     table {
         width: 60%;
         margin: 20px auto;
@@ -32,40 +30,39 @@ h1 {
 
     /* Styling for the table data cells */
     td {
-       /*background-color: #f9f9f9;*/
+        /*background-color: #f9f9f9;*/
         padding: 10px;
         border-top: 1px solid #ddd;
         text-align: left;
     }
 
     tr:nth-child(even) {
-    background-color: #f9f9f9;
+        background-color: #f9f9f9;
     }
 
     tr:nth-child(odd) {
-    background-color: #e5c7ef;
+        background-color: #e5c7ef;
     }
 
     tr:hover {
-    background-color: #7a7979;
+        background-color: #7a7979;
 
- /* Style for sort arrows */
+        /* Style for sort arrows */
 
 
-    .sort-button {
-        background: none;
-        border: none;
-        color: rgb(176, 8, 174);
-        font-weight: bold;
-        cursor: pointer;
-        padding: 5px;
-        font-size: 14px;
-        text-align: left;
+        .sort-button {
+            background: none;
+            border: none;
+            color: rgb(176, 8, 174);
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 14px;
+            text-align: left;
+        }
+
+
     }
-
-
-}
-
 </style>
 
 <table>
@@ -94,7 +91,7 @@ h1 {
 
 @code
 {
-   @*  private List<ToDoItemView> toDoItems =
+    @*  private List<ToDoItemView> toDoItems =
     [
         new ToDoItemView() {ToDoItemId = 1, Name = "Dokonči ukol na Czechitas", Description = "Tohle fakt musíš udělat", IsCompleted = true},
         new ToDoItemView() {ToDoItemId = 2, Name = "Začítlat nepovinny ukol na Czechitas", Description = "Tohle udělej, když budeš stíhat", IsCompleted = false},
@@ -121,12 +118,14 @@ h1 {
 
     private List<ToDoItemView>? toDoItems;
 
-    private void SortItemsById() {
-    toDoItems = toDoItems.OrderBy(item => item.ToDoItemId).ToList();
+    private void SortItemsById()
+    {
+        toDoItems = toDoItems.OrderBy(item => item.ToDoItemId).ToList();
     }
 
-    private void SortItemsByName() {
-    toDoItems = toDoItems.OrderBy(item => item.Name).ToList();
+    private void SortItemsByName()
+    {
+        toDoItems = toDoItems.OrderBy(item => item.Name).ToList();
     }
 
 
