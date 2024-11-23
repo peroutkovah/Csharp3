@@ -1,6 +1,7 @@
 namespace ToDoList.Test.IntegrationTests;
 
 using Microsoft.AspNetCore.Mvc;
+using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
 using ToDoList.Persistence.Repositories;
@@ -9,7 +10,7 @@ using ToDoList.WebApi.Controllers;
 public class GetByIdTests
 {
     [Fact]
-    public void GetById_ValidId_ReturnsItem()
+    public async Task GetById_ValidId_ReturnsItem()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
@@ -21,26 +22,29 @@ public class GetByIdTests
             Description = "Popis",
             IsCompleted = false
         };
-        context.ToDoItems.Add(toDoItem);
-        context.SaveChanges();
+        await context.ToDoItems.AddAsync(toDoItem);
+        await context.SaveChangesAsync();
 
         // Act
-        var result = controller.ReadById(toDoItem.ToDoItemId);
-        var resultResult = result.Result;
+        var result = await controller.ReadById(toDoItem.ToDoItemId);
+        var resultResult =  result.Result; // This should be OkObjectResult on success
+         // Extract the value (DTO)
         var value = result.GetValue();
+
 
         // Assert
         Assert.IsType<OkObjectResult>(resultResult);
         Assert.NotNull(value);
 
-        Assert.Equal(toDoItem.ToDoItemId, value.Id);
-        Assert.Equal(toDoItem.Description, value.Description);
-        Assert.Equal(toDoItem.IsCompleted, value.IsCompleted);
-        Assert.Equal(toDoItem.Name, value.Name);
+
+        Assert.Equal(toDoItem.ToDoItemId, value?.Id);
+        Assert.Equal(toDoItem.Description, value?.Description);
+        Assert.Equal(toDoItem.IsCompleted, value?.IsCompleted);
+        Assert.Equal(toDoItem.Name, value?.Name);
     }
 
     [Fact]
-    public void GetById_InvalidId_ReturnsNotFound()
+    public async Task GetById_InvalidId_ReturnsNotFound()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
@@ -53,12 +57,12 @@ public class GetByIdTests
             Description = "Popis",
             IsCompleted = false
         };
-        context.ToDoItems.Add(toDoItem);
-        context.SaveChanges();
+        await context.ToDoItems.AddAsync(toDoItem);
+        await context.SaveChangesAsync();
 
         // Act
         var invalidId = -1;
-        var result = controller.ReadById(invalidId);
+        var result = await controller.ReadById(invalidId);
         var resultResult = result.Result;
 
         // Assert

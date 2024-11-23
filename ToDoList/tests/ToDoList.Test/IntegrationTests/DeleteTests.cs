@@ -9,7 +9,7 @@ using ToDoList.WebApi.Controllers;
 public class DeleteTests
 {
     [Fact]
-    public void Delete_ValidId_ReturnsNoContent()
+    public async Task Delete_ValidId_ReturnsNoContent()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
@@ -21,18 +21,18 @@ public class DeleteTests
             Description = "Popis",
             IsCompleted = false
         };
-        context.ToDoItems.Add(toDoItem);
-        context.SaveChanges();
+        await context.ToDoItems.AddAsync(toDoItem);
+        await context.SaveChangesAsync();
 
         // Act
-        var result = controller.DeleteById(toDoItem.ToDoItemId);
+        var result = await controller.DeleteById(toDoItem.ToDoItemId);
 
         // Assert
         Assert.IsType<NoContentResult>(result);
     }
 
     [Fact]
-    public void Delete_InvalidId_ReturnsNotFound()
+    public async Task Delete_InvalidId_ReturnsNotFound()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
@@ -44,12 +44,12 @@ public class DeleteTests
             Description = "Popis",
             IsCompleted = false
         };
-        context.ToDoItems.Add(toDoItem);
-        context.SaveChanges();
+        await context.ToDoItems.AddAsync(toDoItem);
+        await context.SaveChangesAsync();
 
         // Act
         var invalidId = -1;
-        var result = controller.DeleteById(invalidId);
+        var result = await controller.DeleteById(invalidId);
 
         // Assert
         Assert.IsType<NotFoundResult>(result);

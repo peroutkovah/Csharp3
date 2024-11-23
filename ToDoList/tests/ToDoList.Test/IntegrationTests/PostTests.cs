@@ -2,6 +2,7 @@ namespace ToDoList.Test.IntegrationTests;
 
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
+
 using ToDoList.Persistence;
 using ToDoList.Persistence.Repositories;
 using ToDoList.WebApi.Controllers;
@@ -9,7 +10,7 @@ using ToDoList.WebApi.Controllers;
 public class PostTests
 {
     [Fact]
-    public void Post_ValidRequest_ReturnsNewItem()
+    public async Task Post_ValidRequest_ReturnsNewItem()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../../../data/localdb.db");
@@ -22,16 +23,14 @@ public class PostTests
         );
 
         // Act
-        var result = controller.Create(request);
-        var resultResult = result.Result;
-        var value = result.GetValue();
+        var result = await controller.Create(request);
 
         // Assert
-        Assert.IsType<CreatedAtActionResult>(resultResult);
-        Assert.NotNull(value);
+        var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        var createdItem = Assert.IsType<ToDoItemGetResponseDto>(createdResult.Value);
 
-        Assert.Equal(request.Description, value.Description);
-        Assert.Equal(request.IsCompleted, value.IsCompleted);
-        Assert.Equal(request.Name, value.Name);
+        Assert.Equal(request.Description, createdItem.Description);
+        Assert.Equal(request.IsCompleted, createdItem.IsCompleted);
+        Assert.Equal(request.Name, createdItem.Name);
     }
 }
