@@ -19,7 +19,8 @@ public class DeleteTests
         {
             Name = "Jmeno",
             Description = "Popis",
-            IsCompleted = false
+            IsCompleted = false,
+            Category = "Kategorie"
         };
         await context.ToDoItems.AddAsync(toDoItem);
         await context.SaveChangesAsync();
@@ -42,7 +43,8 @@ public class DeleteTests
         {
             Name = "Jmeno",
             Description = "Popis",
-            IsCompleted = false
+            IsCompleted = false,
+            Category = "Kategorie"
         };
         await context.ToDoItems.AddAsync(toDoItem);
         await context.SaveChangesAsync();

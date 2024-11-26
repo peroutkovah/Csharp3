@@ -36,8 +36,18 @@ public class ToDoItemsRepository: IRepositoryAsync<ToDoItem>
     public async Task UpdateAsync(ToDoItem item)
     {
 
-        context.Entry(item).CurrentValues.SetValues(item);
-        await context.SaveChangesAsync();
+        var existingItem = await context.ToDoItems.FindAsync(item.ToDoItemId);
+        if (existingItem != null)
+        {
+            context.Entry(existingItem).CurrentValues.SetValues(item);
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            throw new Exception("Item not found.");
+        }
+        /* context.Entry(item).CurrentValues.SetValues(item);
+        await context.SaveChangesAsync(); */
     }
 
     public async Task DeleteAsync(ToDoItem item)

@@ -109,14 +109,16 @@ public class ToDoItemsController : ControllerBase
             }
 
             await repository.UpdateAsync(updatedItem);
+            //respond to client
+            return NoContent(); //204
+
         }
         catch (Exception ex)
         {
             return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
         }
 
-        //respond to client
-        return NoContent(); //204
+
     }
 
     [HttpDelete("{toDoItemId:int}")]

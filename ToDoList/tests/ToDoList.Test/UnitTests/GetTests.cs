@@ -17,7 +17,7 @@ public class GetUnitTests
         // Arrange
         var repositoryMock = Substitute.For<IRepositoryAsync<ToDoItem>>();
         var controller = new ToDoItemsController(repositoryMock);
-        repositoryMock.ReadAllAsync().Returns([new ToDoItem { Name = "testItem", Description = "testDescription", IsCompleted = false }]);
+        repositoryMock.ReadAllAsync().Returns([new ToDoItem { Name = "testItem", Description = "testDescription", IsCompleted = false , Category="testCategory"}]);
 
         // Act
         var result = await controller.Read();

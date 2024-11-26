@@ -21,7 +21,8 @@ public class GetTests
         {
             Name = "Jmeno",
             Description = "Popis",
-            IsCompleted = false
+            IsCompleted = false,
+            Category = "Kategorie"
         };
         await context.ToDoItems.AddAsync(toDoItem);
         await context.SaveChangesAsync();
@@ -41,5 +42,6 @@ public class GetTests
         Assert.Equal(toDoItem.Description, item.Description);
         Assert.Equal(toDoItem.IsCompleted, item.IsCompleted);
         Assert.Equal(toDoItem.Name, item.Name);
+        Assert.Equal(toDoItem.Category, item.Category);
     }
 }

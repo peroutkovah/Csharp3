@@ -20,10 +20,11 @@ public class PutUnitTests
         var request = new ToDoItemUpdateRequestDto(
             Name: "Jmeno",
             Description: "Popis",
-            IsCompleted: false
+            IsCompleted: false,
+            Category: "Kategorie"
         );
         var someId = 1;
-        var readToDoItem = new ToDoItem { Name = "Jmeno", Description = "Popis", IsCompleted = false, ToDoItemId = someId };
+        var readToDoItem = new ToDoItem { Name = "Jmeno", Description = "Popis", IsCompleted = false, Category="Kategorie", ToDoItemId = someId };
         repositoryMock.ReadByIdAsync(someId).Returns(readToDoItem);
 
         // Act
@@ -44,7 +45,8 @@ public class PutUnitTests
         var request = new ToDoItemUpdateRequestDto(
             Name: "Jmeno",
             Description: "Popis",
-            IsCompleted: false
+            IsCompleted: false,
+            Category: "Kategorie"
         );
         repositoryMock.ReadByIdAsync(Arg.Any<int>()).ReturnsNull();
         var someId = 1;
@@ -66,10 +68,11 @@ public class PutUnitTests
         var request = new ToDoItemUpdateRequestDto(
             Name: "Jmeno",
             Description: "Popis",
-            IsCompleted: false
+            IsCompleted: false,
+            Category: "Kategorie"
         );
         var someId = 1;
-        var readToDoItem = new ToDoItem { Name = "Jmeno", Description = "Popis", IsCompleted = false, ToDoItemId = someId };
+        var readToDoItem = new ToDoItem { Name = "Jmeno", Description = "Popis", IsCompleted = false, Category="Kategorie", ToDoItemId = someId };
 
         repositoryMock.ReadByIdAsync(Arg.Any<int>()).Returns(readToDoItem);
         repositoryMock.When(r => r.UpdateAsync(Arg.Any<ToDoItem>())).Do(r => throw new Exception());
