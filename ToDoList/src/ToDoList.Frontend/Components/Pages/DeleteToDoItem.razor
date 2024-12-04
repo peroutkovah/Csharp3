@@ -1,0 +1,65 @@
+﻿@page "/deleteToDoItem/{ItemId:int}"
+@using ToDoList.Frontend.Views
+@using ToDoList.Frontend.Clients
+@inject NavigationManager NavigationManager
+@inject IToDoItemsClient ToDoItemsClient
+@rendermode InteractiveServer
+
+<PageTitle>Delete To Do Item</PageTitle>
+
+@if (ToDoItem is not null)
+{
+
+    <div class="container mt-5">
+    <h5>Opravdu chcete smazat úkol č. @ToDoItem.ToDoItemId ?</h5>
+    <button class="btn btn-danger" @onclick="Submit">ANO</button>
+    <button class="btn btn-secondary" @onclick="Storno">NE</button>
+    </div>
+    <div class="container mt-3">
+    <table class="table table-dark">
+            <thead class="thead-dark">
+                <th>Číslo</th>
+                <th>Jméno úkolu</th>
+                <th>Kategorie</th>
+                <th>Popis</th>
+                <th>Splněný</th>
+            </thead>
+            <tbody>
+            <tr class="table-danger">
+                <td>@ToDoItem.ToDoItemId</td>
+                <td>@ToDoItem.Name</td>
+                <td>@ToDoItem.Category</td>
+                <td>@ToDoItem.Description</td>
+                <td>@ToDoItem.IsCompleted</td>
+            </tr>
+            </tbody>
+    </table>
+
+    </div>
+}
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        ToDoItem = await ToDoItemsClient.ReadItemByIdAsync(ItemId);
+    }
+
+    [Parameter]
+    public int ItemId { get; set; }
+
+    [SupplyParameterFromForm]
+    public ToDoItemView ToDoItem { get; set; }
+
+    public async Task Submit()
+    {
+        await ToDoItemsClient.DeleteItemAsync(ToDoItem);
+        NavigationManager.NavigateTo("/");
+    }
+
+    public async Task Storno()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}
+

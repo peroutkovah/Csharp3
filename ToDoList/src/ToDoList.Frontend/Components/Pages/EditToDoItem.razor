@@ -1,0 +1,76 @@
+﻿@page "/editToDoItem/{ItemId:int}"
+@using ToDoList.Frontend.Views
+@using ToDoList.Frontend.Clients
+@inject NavigationManager NavigationManager
+@inject IToDoItemsClient ToDoItemsClient
+@rendermode InteractiveServer
+
+<PageTitle>Edit To Do Item</PageTitle>
+
+@if (ToDoItem is not null)
+{
+
+    <div class="container mt-5">
+    <h2>Editace úkolu č. @ToDoItem.ToDoItemId</h2>
+    <form>
+      <div class="mb-3">
+        <EditForm Model="ToDoItem" FormName="EditToDoItem" OnSubmit="Submit">
+        <div class="mb-3">
+            <label for="Name" class="form-label">Jméno:</label>
+            <InputText class="form-control" id="Name" @bind-Value="ToDoItem.Name" />
+        </div>
+        <div class="mb-3">
+            <label for="Category" class="form-label">Kategorie:</label>
+            <InputText class="form-control" id="Category" @bind-Value="ToDoItem.Category" />
+        </div>
+        <div class="mb-3">
+            <label for="Description" class="form-label">Popis úkolu:</label>
+            <InputText class="form-control" id="Description" @bind-Value="ToDoItem.Description" />
+        </div>
+        <div class="mb-3">
+            <label for="IsCompleted" class="form-label">Splněný:</label>
+            <InputCheckbox id="IsCompleted" @bind-Value="ToDoItem.IsCompleted" />
+        </div>
+        <button type="submit" class="mb-3">Submit</button>
+        </EditForm>
+    </div>
+  </form>
+</div>
+ <h5>Editovaný úkol bude změněn následovně</h5>
+<table class="table">
+        <thead class="thead-dark">
+            <th>Jméno úkolu</th>
+            <th>Kategorie</th>
+            <th>Popis</th>
+            <th>Splněný</th>
+        </thead>
+        <tr>
+            <td>@ToDoItem.Name</td>
+            <td>@ToDoItem.Category</td>
+            <td>@ToDoItem.Description</td>
+            <td>@ToDoItem.IsCompleted</td>
+        </tr>
+</table>
+
+}
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        ToDoItem = await ToDoItemsClient.ReadItemByIdAsync(ItemId);
+    }
+
+    [Parameter]
+    public int ItemId { get; set; }
+
+    [SupplyParameterFromForm]
+    public ToDoItemView ToDoItem { get; set; }
+
+    public async Task Submit()
+    {
+        await ToDoItemsClient.UpdateItemAsync(ToDoItem);
+        NavigationManager.NavigateTo("/");
+    }
+}
+

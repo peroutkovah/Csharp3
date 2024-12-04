@@ -1,114 +1,54 @@
 @using ToDoList.Frontend.Views
 @using ToDoList.Frontend.Clients
 @inject IToDoItemsClient ToDoItemsClient
-@*rendermode IneractiveServer*@
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <h1>Dashboard</h1>
 
-<style>
-    h1 {
-        text-align: center;
-        font-family: Arial, sans-serif;
-    }
-
-    /* Global reset for table styles */
-    table {
-        width: 60%;
-        margin: 20px auto;
-        border-collapse: collapse;
-        border: 1px solid #ddd;
-        font-family: Arial, sans-serif;
-    }
-
-    /* Styling for the table headings */
-    th {
-        background-color: #440659;
-        color: #ffffff;
-        padding: 10px;
-        text-align: left;
-    }
-
-    /* Styling for the table data cells */
-    td {
-        /*background-color: #f9f9f9;*/
-        padding: 10px;
-        border-top: 1px solid #ddd;
-        text-align: left;
-    }
-
-    tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
-    tr:nth-child(odd) {
-        background-color: #e5c7ef;
-    }
-
-    tr:hover {
-        background-color: #7a7979;
-
-        /* Style for sort arrows */
 
 
-        .sort-button {
-            background: none;
-            border: none;
-            color: rgb(176, 8, 174);
-            font-weight: bold;
-            cursor: pointer;
-            padding: 5px;
-            font-size: 14px;
-            text-align: left;
-        }
-
-
-    }
-</style>
-
-<table>
-    <thead>
-        <th><button class="sort-button" @onclick="SortItemsById">ID</button></th>
-        <th><button class="sort-button" @onclick="SortItemsByName">Jméno úkolu</button></th>
+<table class="table table-hover mt-5">
+    <thead class="table-dark">
+        <th>ID</th>
+        <th>Jméno úkolu</th>
+        <th>Kategorie</th>
         <th>Popis</th>
         <th>Splněný</th>
+        <th>Editovat</th>
+        <th>Smazat</th>
+        <th>Úkol splněný</th>
     </thead>
-    @if (toDoItems is not null)
-    {
-        @foreach (var toDoItem in toDoItems)
+    <tbody>
+        @if (toDoItems is null)
         {
-            <tr>
-                <td>@toDoItem.ToDoItemId</td>
-                <td>@toDoItem.Name</td>
-                <td>@toDoItem.Description</td>
-                <td>@toDoItem.IsCompleted</td>
-            </tr>
+            <p>Nacitam...</p>
         }
-    }
 
-
+        @if (toDoItems is not null)
+        {
+            @foreach (var toDoItem in toDoItems)
+            {
+                <tr class="@GetRowClass(toDoItem) @GetRowClass(toDoItem)">
+                    <td>@toDoItem.ToDoItemId</td>
+                    <td>@toDoItem.Name</td>
+                    <td>@toDoItem.Category</td>
+                    <td>@toDoItem.Description</td>
+                    <td>@toDoItem.IsCompleted</td>
+                    <td><button class="btn btn-success" @onclick="() => EditItem(toDoItem)">EDIT</button></td>
+                    <td><button class="btn btn-danger" @onclick="() => DeleteItem(toDoItem)">SMAZAT</button></td>
+                    <td><button class="btn btn-info" @onclick="() => ChangeToBeCompleted(toDoItem)">Změň splněnost</button></td>
+                </tr>
+            }
+        }
+    </tbody>
 </table>
-
+<h5>Seřaď úkoly podle: </h5>
+<button class="btn btn-outline-primary" @onclick="SortItemsById">ID</button>
+<button class="btn btn-outline-primary" @onclick="SortItemsByName">Jméno úkolu</button>
 
 @code
 {
-    @*  private List<ToDoItemView> toDoItems =
-    [
-        new ToDoItemView() {ToDoItemId = 1, Name = "Dokonči ukol na Czechitas", Description = "Tohle fakt musíš udělat", IsCompleted = true},
-        new ToDoItemView() {ToDoItemId = 2, Name = "Začítlat nepovinny ukol na Czechitas", Description = "Tohle udělej, když budeš stíhat", IsCompleted = false},
-        new ToDoItemView() {ToDoItemId = 3, Name = "Připravit věci do školy", Description = "Nezapomeň na knížku por Anežku", IsCompleted = false},
-        new ToDoItemView() {ToDoItemId = 4, Name = "Nachystat svačiny do školy", Description = "", IsCompleted = true}
-
-    ];
-
-    public class ToDoItemView
-    {
-        public int ToDoItemId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public bool IsCompleted { get; set; }
-    }
-    *@
-
 
 
     protected override async Task OnInitializedAsync()
@@ -130,9 +70,42 @@
 
 
     /*vybarveni radku dlo toho, zda je ukol hotovy nebo ne*/
-    private string GetRowColor(bool isCompleted)
+    private string GetRowColor(ToDoItemView toDoItemView)
     {
-        return isCompleted ? "#000000" : "#FF6347";
+        return toDoItemView.IsCompleted ? "#000000" : "#FF6347";
 
     }
+
+    private string GetRowClass(ToDoItemView toDoItemView)
+    {
+        return toDoItemView.IsCompleted ? "table-success" : "table-secondary";
+    }
+
+    public void EditItem(ToDoItemView toDoItem)
+    {
+        NavigationManager.NavigateTo($"editToDoItem/{toDoItem.ToDoItemId}");
+    }
+
+    public void DeleteItem(ToDoItemView toDoItem)
+    {
+       NavigationManager.NavigateTo($"deleteToDoItem/{toDoItem.ToDoItemId}");
+       @* toDoItems.RemoveAll(item => item.ToDoItemId == toDoItem.ToDoItemId); *@
+
+    }
+
+
+    [Parameter]
+    public int ItemId { get; set; }
+
+    [SupplyParameterFromForm]
+    public ToDoItemView ToDoItem { get; set; }
+    public async Task  ChangeToBeCompleted(ToDoItemView toDoItem)
+    {
+
+        toDoItem.IsCompleted = !toDoItem.IsCompleted;
+
+        await ToDoItemsClient.UpdateItemAsync(ToDoItem);
+
+    }
+
 }
